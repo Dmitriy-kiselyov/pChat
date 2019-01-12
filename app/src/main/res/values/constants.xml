@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="login_min_length">4</integer>
+    <integer name="login_max_length">20</integer>
+    <integer name="password_min_length">6</integer>
+    <integer name="password_max_length">50</integer>
+</resources>

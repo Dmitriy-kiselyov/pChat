@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#7412a7"
+    android:gravity="center_horizontal"
+    tools:context=".SignInActivity">
+
+    <ScrollView
+        android:id="@+id/sign_in_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            style="@style/SignInLayout"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/AppName"
+                android:fontFamily="cursive"
+                android:text="@string/app_name" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/sign_in_login"
+                    style="@style/SignInTextEdit"
+                    android:hint="@string/prompt_login"
+                    android:inputType="text" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/sign_in_password"
+                    style="@style/SignInTextEdit"
+                    android:hint="@string/prompt_password"
+                    android:inputType="textPassword" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/sign_in_button"
+                style="@style/SignInButton"
+                android:text="@string/action_sign_in" />
+
+            <TextView
+                android:id="@+id/sign_in_redirect"
+                style="@style/SignInChange"
+                android:text="@string/action_sign_up_offer" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Login progress -->
+    <ProgressBar
+        android:id="@+id/sign_in_progress"
+        style="@style/SignInProgress" />
+
+</RelativeLayout>

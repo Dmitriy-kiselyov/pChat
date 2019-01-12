@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">pChat</string>
+
+    <!-- Страницы регистрации и входа -->
+    <string name="prompt_login">Логин</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="prompt_password_repeat">Повторите пароль</string>
+    <string name="action_sign_in">Войти</string>
+    <string name="action_sign_in_offer">Уже есть аккаунт? <b>Войти</b></string>
+    <string name="action_sign_up">Зарегистрироваться</string>
+    <string name="action_sign_up_offer">Ещё нет аккаунта? <b>Зарегистрироваться</b></string>
+
+    <string name="error_field_required">Поле обязательно к заполнению</string>
+
+    <string name="error_invalid_login_sign">Логин может состоять только из английских букв и цифр</string>
+    <string name="error_invalid_login_first_letter">Логин должен начинаться на букву</string>
+    <string name="error_invalid_login_length">Логин должен быть не менее %d и не более %d символов</string>
+
+    <string name="error_invalid_password_sign">Пароль может состоять только из английских букв, цифр, знаков \'_\' и \'-\'</string>
+    <string name="error_invalid_password_length">Пароль должен быть не менее %d символов и не более %d символов</string>
+
+    <string name="error_invalid_password_repeat">Пароли не совпадают</string>
+
+    <string name="error_incorrect_credentials">Неверный логин или пароль</string>
+
+    <string name="error_server">Ошибка сервера. Попробуйте позже</string>
+</resources>
