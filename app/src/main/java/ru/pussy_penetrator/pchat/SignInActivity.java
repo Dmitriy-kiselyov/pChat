@@ -3,6 +3,7 @@ package ru.pussy_penetrator.pchat;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
@@ -167,14 +168,18 @@ public class SignInActivity extends AppCompatActivity {
     private void makeAuthRequest(String login, String password) {
         AuthUserRequest user = new AuthUserRequest(login, password);
 
+        final SignInActivity _this = this;
+
         mAuthRequest = RequestUtils.requestSignIn(
                 user,
                 new ResponseCallback<AuthResponse>() {
                     @Override
                     public void onSuccess(AuthResponse response) {
                         String token = response.getToken();
+                        Preferences.get(_this).saveToken(token);
 
-                        alert("I HAVE TOKEN!!! " + token);
+                        Intent intent = new Intent(getApplicationContext(), UserListActivity.class);
+                        startActivity(intent);
                     }
 
                     @Override
