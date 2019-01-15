@@ -3,10 +3,8 @@ package ru.pussy_penetrator.pchat;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.support.annotation.Nullable;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-
-import android.os.AsyncTask;
 
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -17,20 +15,24 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import ru.pussy_penetrator.pchat.request.AuthResponse;
+import ru.pussy_penetrator.pchat.request.AuthUserRequest;
+import ru.pussy_penetrator.pchat.request.ResponseCallback;
+import ru.pussy_penetrator.pchat.utils.AuthUtils;
+import ru.pussy_penetrator.pchat.utils.RequestUtils;
 
 public class SignInActivity extends AppCompatActivity {
+    private static final int ANIMATION_TIME = 500;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world", "a@a:aaaaaa"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserSignInTask mAuthTask = null;
+    private RequestQueue mRequestQueue;
+    private JsonObjectRequest mAuthRequest;
 
     // UI references.
     private EditText mLoginView;
@@ -67,15 +69,17 @@ public class SignInActivity extends AppCompatActivity {
 
         mFormView = findViewById(R.id.sign_in_form);
         mProgressView = findViewById(R.id.sign_in_progress);
+
+        mRequestQueue = Volley.newRequestQueue(this);
     }
 
     /**
      * Attempts to sign in the account specified by the login form.
-     * If there are form errors (invalid email, missing fields, etc.), the
+     * If there are form errors (invalid login, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
+        if (mAuthRequest != null) {
             return;
         }
 
@@ -91,7 +95,7 @@ public class SignInActivity extends AppCompatActivity {
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        String passwordErrorMessage = validatePassword(password);
+        String passwordErrorMessage = AuthUtils.validatePassword(this, password);
         if (passwordErrorMessage != null) {
             cancel = true;
             focusView = mPasswordView;
@@ -99,7 +103,7 @@ public class SignInActivity extends AppCompatActivity {
         }
 
         // Check for a valid login.
-        String loginErrorMessage = validateLogin(login);
+        String loginErrorMessage = AuthUtils.validateLogin(this, login);
         if (loginErrorMessage != null) {
             cancel = true;
             focusView = mLoginView;
@@ -107,60 +111,13 @@ public class SignInActivity extends AppCompatActivity {
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             hideKeyboard();
             toggleProgress(true);
-            mAuthTask = new UserSignInTask(login, password);
-            mAuthTask.execute((Void) null);
+
+            makeAuthRequest(login, password);
         }
-    }
-
-    @Nullable
-    private String validateLogin(String login) {
-        if (login.isEmpty()) {
-            return getString(R.string.error_field_required);
-        }
-
-        if (!login.matches("^[a-zA-Z0-9]+$")) {
-            return getString(R.string.error_invalid_login_sign);
-        }
-
-        int minLength = getResources().getInteger(R.integer.login_min_length);
-        int maxLength = getResources().getInteger(R.integer.login_max_length);
-        if (login.length() < minLength || login.length() > maxLength) {
-            return String.format(getString(R.string.error_invalid_login_length), minLength, maxLength);
-        }
-
-        char firstChar = login.charAt(0);
-        if (!(firstChar >= 'a' && firstChar <= 'z' || firstChar >= 'A' && firstChar <= 'Z')) {
-            return getString(R.string.error_invalid_login_first_letter);
-        }
-
-        return null;
-    }
-
-    @Nullable
-    private String validatePassword(String password) {
-        if (password.isEmpty()) {
-            return getString(R.string.error_field_required);
-        }
-
-        if (!password.matches("^[a-zA-Z0-9_-]+$")) {
-            return getString(R.string.error_invalid_password_sign);
-        }
-
-        int minLength = getResources().getInteger(R.integer.password_min_length);
-        int maxLength = getResources().getInteger(R.integer.password_max_length);
-        if (password.length() < minLength || password.length() > maxLength) {
-            return String.format(getString(R.string.error_invalid_password_length), minLength, maxLength);
-        }
-
-        return null;
     }
 
     /**
@@ -168,102 +125,120 @@ public class SignInActivity extends AppCompatActivity {
      */
     private void toggleProgress(final boolean show) {
         // Fade-in the progress spinner.
-        int shortAnimTime = getResources().getInteger(android.R.integer.config_longAnimTime);
-
         mFormView.animate()
-                .setDuration(shortAnimTime)
+                .setDuration(ANIMATION_TIME)
                 .alpha(show ? 0 : 1)
                 .setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mFormView.setVisibility(View.VISIBLE);
-            }
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        mFormView.setVisibility(View.VISIBLE);
+                    }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-        });
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                    }
+                });
 
         mProgressView.animate()
-                .setDuration(shortAnimTime)
+                .setDuration(ANIMATION_TIME)
                 .alpha(show ? 1 : 0)
                 .setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mProgressView.setVisibility(View.VISIBLE);
-            }
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+                        mProgressView.setVisibility(View.VISIBLE);
+                    }
 
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            }
-        });
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    }
+                });
     }
 
     private void hideKeyboard() {
         View view = this.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    private class UserSignInTask extends AsyncTask<Void, Void, Boolean> {
+    private void makeAuthRequest(String login, String password) {
+        AuthUserRequest user = new AuthUserRequest(login, password);
 
-        private final String mEmail;
-        private final String mPassword;
+        mAuthRequest = RequestUtils.requestSignIn(
+                user,
+                new ResponseCallback<AuthResponse>() {
+                    @Override
+                    public void onSuccess(AuthResponse response) {
+                        String token = response.getToken();
 
-        UserSignInTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
-        }
+                        alert("I HAVE TOKEN!!! " + token);
+                    }
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+                    @Override
+                    public void onFail(AuthResponse response) {
+                        AuthResponse.ErrorCode errorCode = response.getErrorCode();
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
+                        EditText focusView = null;
+                        String message = null;
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
+                        if (errorCode == AuthResponse.ErrorCode.LOGIN_VALIDATION) {
+                            focusView = mLoginView;
+                        }
+                        if (errorCode == AuthResponse.ErrorCode.PASSWORD_VALIDATION) {
+                            focusView = mPasswordView;
+                        }
+                        if (errorCode == AuthResponse.ErrorCode.INCORRECT_CREDENTIALS) {
+                            focusView = mPasswordView;
+                            message = getString(R.string.error_incorrect_credentials);
+                        }
+
+                        if (message == null) {
+                            message = response.getErrorMessage();
+                        }
+
+                        if (focusView == null) {
+                            alert(message);
+                        } else {
+                            final EditText finalFocusView = focusView;
+                            final String finalMessage = message;
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    finalFocusView.setError(finalMessage);
+                                    finalFocusView.requestFocus();
+                                }
+                            }, ANIMATION_TIME);
+                        }
+                    }
+
+                    @Override
+                    public void onError(VolleyError error) {
+                        alert(R.string.error_server);
+                    }
+
+                    @Override
+                    public void onFinal() {
+                        toggleProgress(false);
+                        mAuthRequest = null;
+                    }
                 }
-            }
+        );
 
-            // TODO: register the new account here.
-            return false;
-        }
+        mRequestQueue.add(mAuthRequest);
+    }
 
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            toggleProgress(false);
+    private void alert(String message) {
+        Toast toast = Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT);
+        toast.show();
+    }
 
-            if (success) {
-                finish();
-            } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_credentials));
-                mPasswordView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            toggleProgress(false);
-        }
+    private void alert(int messageResource) {
+        Toast toast = Toast.makeText(getApplicationContext(), getString(messageResource), Toast.LENGTH_SHORT);
+        toast.show();
     }
 }
 
