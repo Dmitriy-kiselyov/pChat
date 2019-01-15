@@ -31,6 +31,7 @@ import ru.pussy_penetrator.pchat.utils.RequestUtils;
 
 public class SignInActivity extends AppCompatActivity {
     private static final int ANIMATION_TIME = 500;
+    private static final int KEYBOARD_HIDE_TIME = 100;
 
     private RequestQueue mRequestQueue;
     private JsonObjectRequest mAuthRequest;
@@ -89,8 +90,8 @@ public class SignInActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String login = mLoginView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String login = mLoginView.getText().toString();
+        final String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -115,9 +116,14 @@ public class SignInActivity extends AppCompatActivity {
             focusView.requestFocus();
         } else {
             hideKeyboard();
-            toggleProgress(true);
 
-            makeAuthRequest(login, password);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    toggleProgress(true);
+                    makeAuthRequest(login, password);
+                }
+            }, KEYBOARD_HIDE_TIME);
         }
     }
 
