@@ -33,6 +33,16 @@ public class Preferences {
         return mPrefs.getString(TOKEN, null);
     }
 
+    public void clearToken() {
+        clear(TOKEN);
+    }
+
+    private void clear(String key) {
+        Editor editor = mPrefs.edit();
+        editor.remove(key);
+        editor.apply();
+    }
+
     private void save(String key, String value) {
         Editor editor = mPrefs.edit();
         editor.putString(key, value);
