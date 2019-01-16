@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="SignInTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="AuthTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
@@ -16,6 +16,10 @@
 
         <item name="colorButtonNormal">@color/primary_dark</item>
         <item name="android:colorButtonNormal">@color/primary_dark</item>
+    </style>
+
+    <style name="AuthThemeNoAnimation" parent="AuthTheme">
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
     <style name="AuthActivity">
