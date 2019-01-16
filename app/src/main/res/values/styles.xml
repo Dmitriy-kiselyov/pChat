@@ -18,6 +18,15 @@
         <item name="android:colorButtonNormal">@color/primary_dark</item>
     </style>
 
+    <style name="AuthActivity">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:focusable">true</item>
+        <item name="android:focusableInTouchMode">true</item>
+        <item name="android:background">#7412a7</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
     <style name="AppName">
         <item name="android:textSize">@dimen/font_size_large</item>
         <item name="android:textAlignment">center</item>
@@ -29,7 +38,7 @@
         <item name="android:fontFamily">cursive</item>
     </style>
 
-    <style name="SignInLayout">
+    <style name="AuthLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
@@ -38,7 +47,7 @@
         <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
     </style>
 
-    <style name="SignInTextEdit">
+    <style name="AuthTextEdit">
         <item name="android:layout_marginTop">8dp</item>
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:layout_width">match_parent</item>
@@ -46,7 +55,7 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <style name="SignInButton">
+    <style name="AuthButton">
         <item name="android:layout_marginTop">16dp</item>
         <item name="android:layout_marginBottom">32dp</item>
         <item name="android:layout_width">match_parent</item>
@@ -54,13 +63,13 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="SignInChange">
+    <style name="AuthChange">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textAlignment">center</item>
     </style>
 
-    <style name="SignInProgress">
+    <style name="AuthProgress">
         <item name="android:layout_width">96dp</item>
         <item name="android:layout_height">96dp</item>
         <item name="android:layout_centerInParent">true</item>

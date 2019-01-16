@@ -20,4 +20,14 @@ public class RequestUtils {
                 callback
         );
     }
+
+    public static JsonObjectRequest requestSignUp(AuthUserRequest user, ResponseCallback<AuthResponse> callback) {
+        return new RequestBuilder<AuthResponse>().build(
+                Request.Method.PUT,
+                RequestUtils.AUTH_URL,
+                user,
+                new AuthResponse(),
+                callback
+        );
+    }
 }

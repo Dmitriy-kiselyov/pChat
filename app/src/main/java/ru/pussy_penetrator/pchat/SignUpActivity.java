@@ -2,11 +2,9 @@ package ru.pussy_penetrator.pchat;
 
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,15 +22,14 @@ import ru.pussy_penetrator.pchat.utils.AndroidHelpers;
 import ru.pussy_penetrator.pchat.utils.AuthUtils;
 import ru.pussy_penetrator.pchat.utils.RequestUtils;
 
-import static ru.pussy_penetrator.pchat.utils.AndroidHelpers.ANIMATION_TIME;
-
-public class SignInActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private JsonObjectRequest mAuthRequest;
 
     // UI references.
     private EditText mLoginView;
     private EditText mPasswordView;
+    private EditText mPasswordRepeatView;
     private View mProgressView;
     private View mFormView;
 
@@ -41,17 +38,19 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_in);
+        setContentView(R.layout.activity_sign_up);
         _this = this;
 
         mLoginView = findViewById(R.id.auth_login);
 
         mPasswordView = findViewById(R.id.auth_password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+        mPasswordRepeatView = findViewById(R.id.auth_password_repeat);
+        mPasswordRepeatView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE) {
-                    attemptSignIn();
+                    attemptSignUp();
                     return true;
                 }
                 return false;
@@ -59,10 +58,10 @@ public class SignInActivity extends AppCompatActivity {
         });
 
         Button signInButton = findViewById(R.id.auth_button);
-        signInButton.setOnClickListener(new OnClickListener() {
+        signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptSignIn();
+                attemptSignUp();
             }
         });
 
@@ -71,11 +70,11 @@ public class SignInActivity extends AppCompatActivity {
 
         mRequestQueue = Volley.newRequestQueue(this);
 
-        TextView signUpRedirect = findViewById(R.id.auth_redirect);
-        signUpRedirect.setOnClickListener(new OnClickListener() {
+        TextView signInRedirect = findViewById(R.id.auth_redirect);
+        signInRedirect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AndroidHelpers.changeActivity(_this, SignUpActivity.class);
+                AndroidHelpers.changeActivity(_this, SignInActivity.class);
             }
         });
     }
@@ -85,7 +84,7 @@ public class SignInActivity extends AppCompatActivity {
      * If there are form errors (invalid login, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptSignIn() {
+    private void attemptSignUp() {
         if (mAuthRequest != null) {
             return;
         }
@@ -93,13 +92,22 @@ public class SignInActivity extends AppCompatActivity {
         // Reset errors.
         mLoginView.setError(null);
         mPasswordView.setError(null);
+        mPasswordRepeatView.setError(null);
 
         // Store values at the time of the login attempt.
         final String login = mLoginView.getText().toString();
         final String password = mPasswordView.getText().toString();
+        final String passwordRepeat = mPasswordRepeatView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
+
+        // Check for passwords to match
+        if (!password.equals(passwordRepeat)) {
+            cancel = true;
+            focusView = mPasswordRepeatView;
+            mPasswordRepeatView.setError(getString(R.string.error_invalid_password_repeat));
+        }
 
         // Check for a valid password, if the user entered one.
         String passwordErrorMessage = AuthUtils.validatePassword(this, password);
@@ -133,7 +141,7 @@ public class SignInActivity extends AppCompatActivity {
     private void makeAuthRequest(String login, String password) {
         AuthUserRequest user = new AuthUserRequest(login, password);
 
-        mAuthRequest = RequestUtils.requestSignIn(
+        mAuthRequest = RequestUtils.requestSignUp(
                 user,
                 new ResponseCallback<AuthResponse>() {
                     @Override
@@ -157,9 +165,9 @@ public class SignInActivity extends AppCompatActivity {
                         if (errorCode == AuthResponse.ErrorCode.PASSWORD_VALIDATION) {
                             focusView = mPasswordView;
                         }
-                        if (errorCode == AuthResponse.ErrorCode.INCORRECT_CREDENTIALS) {
-                            focusView = mPasswordView;
-                            message = getString(R.string.error_incorrect_credentials);
+                        if (errorCode == AuthResponse.ErrorCode.USER_EXISTS) {
+                            focusView = mLoginView;
+                            message = getString(R.string.error_user_exists);
                         }
 
                         if (message == null) {
@@ -178,7 +186,7 @@ public class SignInActivity extends AppCompatActivity {
                                     finalFocusView.setError(finalMessage);
                                     finalFocusView.requestFocus();
                                 }
-                            }, ANIMATION_TIME);
+                            }, AndroidHelpers.ANIMATION_TIME);
                         }
                     }
 
@@ -198,4 +206,3 @@ public class SignInActivity extends AppCompatActivity {
         mRequestQueue.add(mAuthRequest);
     }
 }
-

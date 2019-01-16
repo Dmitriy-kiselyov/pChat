@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/AuthActivity"
+    tools:context=".SignUpActivity">
+
+    <ScrollView
+        android:id="@+id/auth_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            style="@style/AuthLayout"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/AppName"
+                android:fontFamily="cursive"
+                android:text="@string/app_name" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/auth_login"
+                    style="@style/AuthTextEdit"
+                    android:hint="@string/prompt_login"
+                    android:inputType="text" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/auth_password"
+                    style="@style/AuthTextEdit"
+                    android:hint="@string/prompt_password"
+                    android:inputType="textPassword" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/auth_password_repeat"
+                    style="@style/AuthTextEdit"
+                    android:hint="@string/prompt_password_repeat"
+                    android:inputType="textPassword" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/auth_button"
+                style="@style/AuthButton"
+                android:text="@string/action_sign_up" />
+
+            <TextView
+                android:id="@+id/auth_redirect"
+                style="@style/AuthChange"
+                android:text="@string/action_sign_in_offer" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Login progress -->
+    <ProgressBar
+        android:id="@+id/auth_progress"
+        style="@style/AuthProgress" />
+
+</RelativeLayout>

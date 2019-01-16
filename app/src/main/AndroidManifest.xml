@@ -17,6 +17,7 @@
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -24,6 +25,9 @@
             android:name=".SignInActivity"
             android:noHistory="true" />
         <activity android:name=".UserListActivity" />
+        <activity
+            android:name=".SignUpActivity"
+            android:noHistory="true" />
     </application>
 
 </manifest>

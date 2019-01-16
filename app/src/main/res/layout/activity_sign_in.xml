@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    android:background="#7412a7"
-    android:gravity="center_horizontal"
+    style="@style/AuthActivity"
     tools:context=".SignInActivity">
 
     <ScrollView
-        android:id="@+id/sign_in_form"
+        android:id="@+id/auth_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <LinearLayout
-            style="@style/SignInLayout"
+            style="@style/AuthLayout"
             android:orientation="vertical">
 
             <TextView
@@ -29,8 +23,8 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/sign_in_login"
-                    style="@style/SignInTextEdit"
+                    android:id="@+id/auth_login"
+                    style="@style/AuthTextEdit"
                     android:hint="@string/prompt_login"
                     android:inputType="text" />
 
@@ -41,21 +35,21 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/sign_in_password"
-                    style="@style/SignInTextEdit"
+                    android:id="@+id/auth_password"
+                    style="@style/AuthTextEdit"
                     android:hint="@string/prompt_password"
                     android:inputType="textPassword" />
 
             </android.support.design.widget.TextInputLayout>
 
             <Button
-                android:id="@+id/sign_in_button"
-                style="@style/SignInButton"
+                android:id="@+id/auth_button"
+                style="@style/AuthButton"
                 android:text="@string/action_sign_in" />
 
             <TextView
-                android:id="@+id/sign_in_redirect"
-                style="@style/SignInChange"
+                android:id="@+id/auth_redirect"
+                style="@style/AuthChange"
                 android:text="@string/action_sign_up_offer" />
 
         </LinearLayout>
@@ -63,7 +57,7 @@
 
     <!-- Login progress -->
     <ProgressBar
-        android:id="@+id/sign_in_progress"
-        style="@style/SignInProgress" />
+        android:id="@+id/auth_progress"
+        style="@style/AuthProgress" />
 
 </RelativeLayout>

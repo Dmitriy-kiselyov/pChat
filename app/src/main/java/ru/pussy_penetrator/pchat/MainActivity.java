@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import ru.pussy_penetrator.pchat.utils.AndroidHelpers;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -15,14 +17,9 @@ public class MainActivity extends AppCompatActivity {
 
         String token = Preferences.get(this).getToken();
         if (token != null) {
-            changeActivity(UserListActivity.class);
+            AndroidHelpers.changeActivity(this, UserListActivity.class);
         } else {
-            changeActivity(SignInActivity.class);
+            AndroidHelpers.changeActivity(this, SignInActivity.class);
         }
-    }
-
-    private void changeActivity(Class activityClass) {
-        Intent intent = new Intent(this, activityClass);
-        startActivity(intent);
     }
 }
