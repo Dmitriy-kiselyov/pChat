@@ -43,9 +43,9 @@ public class AndroidHelpers {
 
     public static final int ANIMATION_TIME = 500;
 
-    public static void toggleViews(final View showView, final View hideView) {
-        toggleView(showView, true);
-        toggleView(hideView, false);
+    public static void toggleViews(final View hideView, final View showView) {
+        toggleView(hideView, true);
+        toggleView(showView, false);
     }
 
     private static void toggleView(final View view, final boolean show) {

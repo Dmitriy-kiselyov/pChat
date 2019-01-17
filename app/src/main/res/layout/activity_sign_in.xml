@@ -58,6 +58,7 @@
     <!-- Login progress -->
     <ProgressBar
         android:id="@+id/auth_progress"
-        style="@style/AuthProgress" />
+        android:visibility="gone"
+        style="@style/PChatProgress" />
 
 </RelativeLayout>

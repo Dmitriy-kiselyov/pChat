@@ -23,13 +23,16 @@
         </activity>
         <activity
             android:name=".SignInActivity"
-            android:theme="@style/AuthTheme"
-            android:noHistory="true" />
-        <activity android:name=".UserListActivity" />
+            android:noHistory="true"
+            android:theme="@style/AuthTheme" />
         <activity
             android:name=".SignUpActivity"
-            android:theme="@style/AuthTheme"
-            android:noHistory="true" />
+            android:noHistory="true"
+            android:theme="@style/AuthTheme" />
+        <activity android:name=".UserListActivity" />
+        <activity
+            android:name=".MessagesActivity"
+            android:theme="@style/PChatTheme.NoAnimation" />
     </application>
 
 </manifest>

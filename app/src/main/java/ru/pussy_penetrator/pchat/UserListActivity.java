@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.android.volley.RequestQueue;
@@ -30,17 +31,23 @@ public class UserListActivity extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private JsonObjectRequest mUserListRequest;
 
-    private RecyclerView mUserList;
+    private RecyclerView mUserRecyclerView;
+    private ProgressBar mProgress;
+
+    private AppCompatActivity _this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
+        _this = this;
 
-        mUserList = findViewById(R.id.user_list);
-        mUserList.setLayoutManager(new LinearLayoutManager(this));
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mUserList.getContext(), 1);
-        mUserList.addItemDecoration(dividerItemDecoration);
+        mUserRecyclerView = findViewById(R.id.user_list);
+        mUserRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(mUserRecyclerView.getContext(), 1);
+        mUserRecyclerView.addItemDecoration(dividerItemDecoration);
+
+        mProgress = findViewById(R.id.progress);
 
         mRequestQueue = Volley.newRequestQueue(this);
         makeRequest();
@@ -80,7 +87,7 @@ public class UserListActivity extends AppCompatActivity {
             @Override
             public void onSuccess(UserListPreviewResponse response) {
                 if (response != null) {
-                    mUserList.setAdapter(new UserPreviewAdapter(response.getUserPreviews()));
+                    mUserRecyclerView.setAdapter(new UserPreviewAdapter(response.getUserPreviews()));
                 }
             }
 
@@ -111,6 +118,7 @@ public class UserListActivity extends AppCompatActivity {
 
             @Override
             public void onFinal() {
+                AndroidHelpers.toggleViews(mProgress, mUserRecyclerView);
                 mUserListRequest = null;
             }
         });
@@ -121,10 +129,17 @@ public class UserListActivity extends AppCompatActivity {
     private class UserPreviewHolder extends RecyclerView.ViewHolder {
         private TextView mLoginView;
 
-        public UserPreviewHolder(View itemView) {
+        UserPreviewHolder(View itemView) {
             super(itemView);
 
             mLoginView = itemView.findViewById(R.id.list_user_login);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AndroidHelpers.changeActivity(_this, MessagesActivity.class);
+                }
+            });
         }
 
         public void bind(UserPreview user) {
