@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_empty);
 
-        Preferences.get(this).clearToken(); // TODO: убрать, когда будет кнопка выхода
+        //Preferences.get(this).clearToken(); // TODO: убрать, когда будет кнопка выхода
 
         String token = Preferences.get(this).getToken();
         if (token != null) {
