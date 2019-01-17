@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AuthTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="PChatTheme" parent="Theme.AppCompat">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primary_dark</item>
@@ -18,11 +18,13 @@
         <item name="android:colorButtonNormal">@color/primary_dark</item>
     </style>
 
-    <style name="AuthThemeNoAnimation" parent="AuthTheme">
+    <style name="AuthTheme" parent="PChatTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 
-    <style name="AuthActivity">
+    <style name="AuthRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:focusable">true</item>
@@ -31,7 +33,7 @@
         <item name="android:gravity">center_horizontal</item>
     </style>
 
-    <style name="AppName">
+    <style name="AuthAppName">
         <item name="android:textSize">@dimen/font_size_large</item>
         <item name="android:textAlignment">center</item>
         <item name="android:layout_marginTop">@dimen/activity_vertical_margin_large</item>

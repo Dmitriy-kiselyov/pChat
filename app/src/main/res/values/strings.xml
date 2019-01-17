@@ -25,4 +25,7 @@
     <string name="error_user_exists">Пользователь с таким логином уже существует</string>
 
     <string name="error_server">Ошибка сервера. Попробуйте позже</string>
+
+    <!-- Меню -->
+    <string name="menu_logout">Выйти</string>
 </resources>

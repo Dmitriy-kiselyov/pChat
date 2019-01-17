@@ -188,16 +188,18 @@ public class SignUpActivity extends AppCompatActivity {
                                 }
                             }, AndroidHelpers.ANIMATION_TIME);
                         }
+
+                        AndroidHelpers.toggleViews(mProgressView, mFormView);
                     }
 
                     @Override
                     public void onError(VolleyError error) {
+                        AndroidHelpers.toggleViews(mProgressView, mFormView);
                         AndroidHelpers.alert(getApplicationContext(), R.string.error_server);
                     }
 
                     @Override
                     public void onFinal() {
-                        AndroidHelpers.toggleViews(mProgressView, mFormView);
                         mAuthRequest = null;
                     }
                 }
