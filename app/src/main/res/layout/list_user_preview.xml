@@ -19,6 +19,6 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:adjustViewBounds="false"
-        android:src="@drawable/arrow_right" />
+        android:src="@drawable/arrow_right_white" />
 
 </RelativeLayout>

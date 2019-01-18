@@ -28,4 +28,7 @@
 
     <!-- Меню -->
     <string name="menu_logout">Выйти</string>
+
+    <!-- Чат -->
+    <string name="prompt_message">Сообщение</string>
 </resources>

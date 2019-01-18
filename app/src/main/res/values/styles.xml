@@ -84,4 +84,22 @@
         <item name="android:layout_centerInParent">true</item>
     </style>
 
+    <style name="MessageTime">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MessageWrapper">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="MessageText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
 </resources>

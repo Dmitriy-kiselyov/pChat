@@ -158,7 +158,7 @@ public class UserListActivity extends AppCompatActivity {
         @Override
         public UserPreviewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater li = getLayoutInflater();
-            View view = li.inflate(R.layout.list_user_message_preview, parent, false);
+            View view = li.inflate(R.layout.list_user_preview, parent, false);
 
             return new UserPreviewHolder(view);
         }

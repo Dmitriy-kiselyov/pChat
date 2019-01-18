@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/time"
+        android:text="11:45"
+        style="@style/MessageTime"
+        android:layout_marginLeft="8dp"
+        android:textAlignment="textStart" />
+
+    <android.support.constraint.ConstraintLayout
+        style="@style/MessageWrapper"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintTop_toBottomOf="@id/time">
+        <TextView
+            android:id="@+id/text"
+            android:text="fkds osdf nuaass dd sd d sdfu"
+            android:textAlignment="textStart"
+            app:layout_constraintStart_toStartOf="parent"
+            style="@style/MessageText"
+            android:background="@drawable/list_message_another_background" />
+    </android.support.constraint.ConstraintLayout>
+
+
+</android.support.constraint.ConstraintLayout>
