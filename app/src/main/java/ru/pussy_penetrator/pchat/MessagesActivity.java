@@ -17,7 +17,10 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import ru.pussy_penetrator.pchat.request.Message;
 import ru.pussy_penetrator.pchat.request.MessageRequest;
@@ -31,12 +34,16 @@ public class MessagesActivity extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private JsonObjectRequest mPollMessagesRequest;
     private JsonObjectRequest mSendMessageRequest;
+    private Timer mPollRequestSheduler;
+    private int mLastMessageId;
 
     private RecyclerView mMessagesRecyclerView;
+    private MessageAdapter mMessagesAdapter;
     private EditText mMessageEdit;
     private Button mSendButton;
 
     private String mSenderLogin;
+    private List<Message> mMessages = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +55,9 @@ public class MessagesActivity extends AppCompatActivity {
 
         mMessagesRecyclerView = findViewById(R.id.messages);
         mMessagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mMessagesAdapter = new MessageAdapter(mMessages);
+        mMessagesRecyclerView.setAdapter(mMessagesAdapter);
+
         mMessageEdit = findViewById(R.id.message);
 
         mSendButton = findViewById(R.id.send);
@@ -58,8 +68,31 @@ public class MessagesActivity extends AppCompatActivity {
             }
         });
 
+        mPollRequestSheduler = new Timer();
+        mLastMessageId = 0;
+
         mRequestQueue = Volley.newRequestQueue(this);
         makePollRequest();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mPollRequestSheduler.scheduleAtFixedRate(new TimerTask() {
+              @Override
+              public void run() {
+                  makePollRequest();
+              }
+          },
+        0, 400);
+    }
+
+    @Override
+    protected void onStop() {
+        mPollRequestSheduler.cancel();
+
+        super.onStop();
     }
 
     @Override
@@ -73,10 +106,18 @@ public class MessagesActivity extends AppCompatActivity {
             return;
         }
 
-        mPollMessagesRequest = RequestUtils.requestMessages(this, mSenderLogin, new ResponseCallback<MessagesResponse>() {
+        mPollMessagesRequest = RequestUtils.requestMessages(this, mSenderLogin, mLastMessageId + 1, new ResponseCallback<MessagesResponse>() {
             @Override
             public void onSuccess(MessagesResponse response) {
-                mMessagesRecyclerView.setAdapter(new MessageAdapter(response.getMessages()));
+                List<Message> newMessages = response.getMessages();
+                if (newMessages.isEmpty()) {
+                    return;
+                }
+
+                mMessages.addAll(newMessages);
+                mMessagesAdapter.notifyDataSetChanged();
+
+                mLastMessageId = newMessages.get(newMessages.size() - 1).getId();
             }
 
             @Override

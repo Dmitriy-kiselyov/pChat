@@ -51,10 +51,10 @@ public class RequestUtils {
         );
     }
 
-    public static JsonObjectRequest requestMessages(Context context, String login, ResponseCallback<MessagesResponse> callback) {
+    public static JsonObjectRequest requestMessages(Context context, String login, int untilId, ResponseCallback<MessagesResponse> callback) {
         return new RequestBuilder<MessagesResponse>(context).build(
                 Request.Method.GET,
-                MESSAGES_URL + "?for=" + login,
+                MESSAGES_URL + "?for=" + login + "&until=" + untilId,
                 null,
                 new MessagesResponse(),
                 callback
