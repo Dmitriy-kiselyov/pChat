@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -19,17 +20,21 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import ru.pussy_penetrator.pchat.request.Message;
+import ru.pussy_penetrator.pchat.request.MessageRequest;
 import ru.pussy_penetrator.pchat.request.MessagesResponse;
 import ru.pussy_penetrator.pchat.request.ResponseCallback;
+import ru.pussy_penetrator.pchat.request.StatusResponse;
 import ru.pussy_penetrator.pchat.utils.AndroidHelpers;
 import ru.pussy_penetrator.pchat.utils.RequestUtils;
 
 public class MessagesActivity extends AppCompatActivity {
     private RequestQueue mRequestQueue;
     private JsonObjectRequest mPollMessagesRequest;
+    private JsonObjectRequest mSendMessageRequest;
 
     private RecyclerView mMessagesRecyclerView;
     private EditText mMessageEdit;
+    private Button mSendButton;
 
     private String mSenderLogin;
 
@@ -44,6 +49,14 @@ public class MessagesActivity extends AppCompatActivity {
         mMessagesRecyclerView = findViewById(R.id.messages);
         mMessagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mMessageEdit = findViewById(R.id.message);
+
+        mSendButton = findViewById(R.id.send);
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                makeSendRequest();
+            }
+        });
 
         mRequestQueue = Volley.newRequestQueue(this);
         makePollRequest();
@@ -72,23 +85,8 @@ public class MessagesActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onError(VolleyError error) { // TODO: общая часть
-                String alertMessage;
-                if (error.networkResponse == null) {
-                    alertMessage = getString(R.string.error_server);
-                } else {
-                    int code = error.networkResponse.statusCode;
-                    String message;
-                    try {
-                        message = new String(error.networkResponse.data, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        message = getString(R.string.error_server);
-                    }
-
-                    alertMessage = code + ": " + message;
-                }
-
-                AndroidHelpers.alert(getApplicationContext(), alertMessage);
+            public void onError(VolleyError error) {
+                onErrorRequest(error);
             }
 
             @Override
@@ -98,6 +96,58 @@ public class MessagesActivity extends AppCompatActivity {
         });
 
         mRequestQueue.add(mPollMessagesRequest);
+    }
+
+    private void makeSendRequest() {
+        if (mSendMessageRequest != null) {
+            return;
+        }
+
+        MessageRequest message = new MessageRequest(mMessageEdit.getText().toString(), mSenderLogin);
+        mMessageEdit.setText("");
+
+        mSendMessageRequest = RequestUtils.sendMessage(this, message, new ResponseCallback<StatusResponse>() {
+            @Override
+            public void onSuccess(StatusResponse response) {
+                AndroidHelpers.alert(getApplicationContext(), "Success"); // TODO: подумать
+            }
+
+            @Override
+            public void onFail(StatusResponse response) {
+                AndroidHelpers.alert(getApplicationContext(), "Fail"); // TODO: подумать
+            }
+
+            @Override
+            public void onError(VolleyError error) {
+                onErrorRequest(error);
+            }
+
+            @Override
+            public void onFinal() {
+                mSendMessageRequest = null;
+            }
+        });
+
+        mRequestQueue.add(mSendMessageRequest);
+    }
+
+    private void onErrorRequest(VolleyError error) { // TODO: общая часть
+        String alertMessage;
+        if (error.networkResponse == null) {
+            alertMessage = getString(R.string.error_server);
+        } else {
+            int code = error.networkResponse.statusCode;
+            String message;
+            try {
+                message = new String(error.networkResponse.data, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                message = getString(R.string.error_server);
+            }
+
+            alertMessage = code + ": " + message;
+        }
+
+        AndroidHelpers.alert(getApplicationContext(), alertMessage);
     }
 
     private class MessageHolder extends RecyclerView.ViewHolder {

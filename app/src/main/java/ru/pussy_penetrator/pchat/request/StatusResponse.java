@@ -2,26 +2,44 @@ package ru.pussy_penetrator.pchat.request;
 
 import android.support.annotation.Nullable;
 
-public enum StatusResponse {
-    SUCCESS("success"), ERROR("error");
+import org.json.JSONException;
+import org.json.JSONObject;
 
-    private final String status;
+public class StatusResponse implements BaseResponse {
+    private Status status;
+    private ErrorResponse error;
 
-    StatusResponse(String status) {
+    public StatusResponse() {}
+
+    private StatusResponse(Status status) {
         this.status = status;
     }
 
-    String get() {
-        return this.status;
+    private StatusResponse(ErrorResponse error) {
+        this(Status.ERROR);
+        this.error = error;
+    }
+
+    @Override
+    public Status getStatus() {
+        return status;
     }
 
     @Nullable
-    static StatusResponse from(String status) {
-        for(StatusResponse response : StatusResponse.values()) {
-            if (response.status.equals(status)) {
-                return response;
+    @Override
+    public StatusResponse fromJSON(JSONObject json) {
+        try {
+            Status status = Status.from(json.getString("status"));
+
+            if (status == Status.SUCCESS) {
+                return new StatusResponse(status);
+            }
+            if (status == Status.ERROR) {
+                ErrorResponse error = ErrorResponse.fromJSON(json.getJSONObject("error"));
+                return new StatusResponse(error);
             }
         }
+        catch (JSONException e) {}
 
         return null;
     }

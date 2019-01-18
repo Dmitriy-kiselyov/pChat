@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONObject;
 
 public interface BaseResponse {
-    StatusResponse getStatus();
+    Status getStatus();
     @Nullable
     BaseResponse fromJSON(JSONObject json);
 }

@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserListPreviewResponse implements BaseResponse {
-    private StatusResponse status;
+    private Status status;
     private List<UserPreview> mUserPreviews;
 
     public UserListPreviewResponse() {}
 
     private UserListPreviewResponse(List<UserPreview> userPreviews) {
-        status = StatusResponse.SUCCESS;
+        status = Status.SUCCESS;
         mUserPreviews = userPreviews;
     }
 
@@ -25,7 +25,7 @@ public class UserListPreviewResponse implements BaseResponse {
     }
 
     @Override
-    public StatusResponse getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -33,8 +33,8 @@ public class UserListPreviewResponse implements BaseResponse {
     @Override
     public UserListPreviewResponse fromJSON(JSONObject json) {
         try {
-            StatusResponse status = StatusResponse.from(json.getString("status"));
-            if (status != StatusResponse.SUCCESS) {
+            Status status = Status.from(json.getString("status"));
+            if (status != Status.SUCCESS) {
                 return null;
             }
 

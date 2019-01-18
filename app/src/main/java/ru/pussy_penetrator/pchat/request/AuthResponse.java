@@ -6,32 +6,32 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class AuthResponse implements BaseResponse {
-    private StatusResponse status;
+    private Status status;
     private ErrorResponse error;
     private String token;
 
     public AuthResponse() {}
 
-    private AuthResponse(StatusResponse status, String token) {
+    private AuthResponse(Status status, String token) {
         this.status = status;
         this.token = token;
     }
 
-    private AuthResponse(StatusResponse status, ErrorResponse error) {
+    private AuthResponse(Status status, ErrorResponse error) {
         this.status = status;
         this.error = error;
     }
 
     public AuthResponse fromJSON(JSONObject json) {
         try {
-            StatusResponse status = StatusResponse.from(json.getString("status"));
+            Status status = Status.from(json.getString("status"));
 
-            if (status == StatusResponse.SUCCESS) {
+            if (status == Status.SUCCESS) {
                 String token = json.getString("token");
                 return new AuthResponse(status, token);
             }
 
-            if (status == StatusResponse.ERROR) {
+            if (status == Status.ERROR) {
                 ErrorResponse error = ErrorResponse.fromJSON(json.getJSONObject("error"));
                 return new AuthResponse(status, error);
             }
@@ -40,7 +40,7 @@ public class AuthResponse implements BaseResponse {
         return null;
     }
 
-    public StatusResponse getStatus() {
+    public Status getStatus() {
         return status;
     }
 

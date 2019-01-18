@@ -9,8 +9,10 @@ import org.json.JSONObject;
 
 import ru.pussy_penetrator.pchat.request.AuthResponse;
 import ru.pussy_penetrator.pchat.request.AuthUserRequest;
+import ru.pussy_penetrator.pchat.request.MessageRequest;
 import ru.pussy_penetrator.pchat.request.MessagesResponse;
 import ru.pussy_penetrator.pchat.request.ResponseCallback;
+import ru.pussy_penetrator.pchat.request.StatusResponse;
 import ru.pussy_penetrator.pchat.request.UserListPreviewResponse;
 
 public class RequestUtils {
@@ -55,6 +57,16 @@ public class RequestUtils {
                 MESSAGES_URL + "?for=" + login,
                 null,
                 new MessagesResponse(),
+                callback
+        );
+    }
+
+    public static JsonObjectRequest sendMessage(Context context, MessageRequest message, ResponseCallback<StatusResponse> callback) {
+        return new RequestBuilder<StatusResponse>(context).build(
+                Request.Method.POST,
+                MESSAGES_URL,
+                message,
+                new StatusResponse(),
                 callback
         );
     }

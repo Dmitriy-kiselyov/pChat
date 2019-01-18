@@ -3,7 +3,6 @@ package ru.pussy_penetrator.pchat.utils;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -17,7 +16,7 @@ import ru.pussy_penetrator.pchat.Preferences;
 import ru.pussy_penetrator.pchat.request.BaseRequest;
 import ru.pussy_penetrator.pchat.request.BaseResponse;
 import ru.pussy_penetrator.pchat.request.ResponseCallback;
-import ru.pussy_penetrator.pchat.request.StatusResponse;
+import ru.pussy_penetrator.pchat.request.Status;
 
 public class RequestBuilder<Resp extends BaseResponse> {
     private Context mContext;
@@ -51,7 +50,7 @@ public class RequestBuilder<Resp extends BaseResponse> {
 
                         Resp response = (Resp) responseExample.fromJSON(json);
 
-                        if (response.getStatus() == StatusResponse.SUCCESS) {
+                        if (response.getStatus() == Status.SUCCESS) {
                             callback.onSuccess(response);
                         } else {
                             callback.onFail(response);

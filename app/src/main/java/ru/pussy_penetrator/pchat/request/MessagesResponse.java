@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessagesResponse implements BaseResponse {
-    private StatusResponse status;
+    private Status status;
     private List<Message> mMessages;
 
     public MessagesResponse() {}
 
     private MessagesResponse(List<Message> messages) {
-        status = StatusResponse.SUCCESS;
+        status = Status.SUCCESS;
         mMessages = messages;
     }
 
@@ -25,7 +25,7 @@ public class MessagesResponse implements BaseResponse {
     }
 
     @Override
-    public StatusResponse getStatus() {
+    public Status getStatus() {
         return status;
     }
 
@@ -33,8 +33,8 @@ public class MessagesResponse implements BaseResponse {
     @Override
     public MessagesResponse fromJSON(JSONObject json) {
         try {
-            StatusResponse status = StatusResponse.from(json.getString("status"));
-            if (status != StatusResponse.SUCCESS) {
+            Status status = Status.from(json.getString("status"));
+            if (status != Status.SUCCESS) {
                 return null;
             }
 
