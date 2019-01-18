@@ -2,18 +2,170 @@ package ru.pussy_penetrator.pchat;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
+import ru.pussy_penetrator.pchat.request.Message;
+import ru.pussy_penetrator.pchat.request.MessagesResponse;
+import ru.pussy_penetrator.pchat.request.ResponseCallback;
+import ru.pussy_penetrator.pchat.utils.AndroidHelpers;
+import ru.pussy_penetrator.pchat.utils.RequestUtils;
 
 public class MessagesActivity extends AppCompatActivity {
+    private RequestQueue mRequestQueue;
+    private JsonObjectRequest mPollMessagesRequest;
+
+    private RecyclerView mMessagesRecyclerView;
+    private EditText mMessageEdit;
+
+    private String mSenderLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messages);
+
+        mSenderLogin = getIntent().getStringExtra("login");
+        setTitle(mSenderLogin);
+
+        mMessagesRecyclerView = findViewById(R.id.messages);
+        mMessagesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mMessageEdit = findViewById(R.id.message);
+
+        mRequestQueue = Volley.newRequestQueue(this);
+        makePollRequest();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(0, 0);
+    }
+
+    private void makePollRequest() {
+        if (mPollMessagesRequest != null) {
+            return;
+        }
+
+        mPollMessagesRequest = RequestUtils.requestMessages(this, mSenderLogin, new ResponseCallback<MessagesResponse>() {
+            @Override
+            public void onSuccess(MessagesResponse response) {
+                mMessagesRecyclerView.setAdapter(new MessageAdapter(response.getMessages()));
+            }
+
+            @Override
+            public void onFail(MessagesResponse response) {
+                AndroidHelpers.alert(getApplicationContext(), "Ошибка загрузки сообщений");
+            }
+
+            @Override
+            public void onError(VolleyError error) { // TODO: общая часть
+                String alertMessage;
+                if (error.networkResponse == null) {
+                    alertMessage = getString(R.string.error_server);
+                } else {
+                    int code = error.networkResponse.statusCode;
+                    String message;
+                    try {
+                        message = new String(error.networkResponse.data, "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        message = getString(R.string.error_server);
+                    }
+
+                    alertMessage = code + ": " + message;
+                }
+
+                AndroidHelpers.alert(getApplicationContext(), alertMessage);
+            }
+
+            @Override
+            public void onFinal() {
+                mPollMessagesRequest = null;
+            }
+        });
+
+        mRequestQueue.add(mPollMessagesRequest);
+    }
+
+    private class MessageHolder extends RecyclerView.ViewHolder {
+        private TextView mTimeView;
+        private TextView mTextView;
+
+        MessageHolder(View itemView) {
+            super(itemView);
+
+            mTimeView = itemView.findViewById(R.id.time);
+            mTextView = itemView.findViewById(R.id.text);
+        }
+
+        public void bind(Message message) {
+            mTimeView.setText(message.getFormattedTime());
+            mTextView.setText(message.getText());
+        }
+    }
+
+    private class MessageAdapter extends RecyclerView.Adapter<MessageHolder> {
+
+        private static final int TYPE_SELF = 1;
+        private static final int TYPE_ANOTHER = 2;
+
+        private List<Message> mMessages;
+
+        public MessageAdapter(List<Message> messages) {
+            mMessages = messages;
+        }
+
+        @Override
+        public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater li = getLayoutInflater();
+
+            int layout = 0;
+            switch (viewType) {
+                case TYPE_SELF:
+                    layout = R.layout.list_message_from_self;
+                    break;
+                case TYPE_ANOTHER:
+                    layout = R.layout.list_message_from_another;
+            }
+
+            View view = li.inflate(layout, parent, false);
+
+            return new MessageHolder(view);
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            Message message = mMessages.get(position);
+
+            if (message.getSender().equals(mSenderLogin)) {
+                return TYPE_ANOTHER;
+            } else {
+                return TYPE_SELF;
+            }
+        }
+
+        @Override
+        public void onBindViewHolder(MessageHolder holder, int position) {
+            Message message = mMessages.get(position);
+            holder.bind(message);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mMessages.size();
+        }
     }
 }

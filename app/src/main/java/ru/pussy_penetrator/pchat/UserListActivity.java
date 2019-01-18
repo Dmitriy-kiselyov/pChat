@@ -1,5 +1,6 @@
 package ru.pussy_penetrator.pchat;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -128,6 +129,7 @@ public class UserListActivity extends AppCompatActivity {
 
     private class UserPreviewHolder extends RecyclerView.ViewHolder {
         private TextView mLoginView;
+        private String mLogin;
 
         UserPreviewHolder(View itemView) {
             super(itemView);
@@ -137,13 +139,16 @@ public class UserListActivity extends AppCompatActivity {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AndroidHelpers.changeActivity(_this, MessagesActivity.class);
+                    Intent intent = new Intent(_this, MessagesActivity.class);
+                    intent.putExtra("login", mLogin);
+                    startActivity(intent);
                 }
             });
         }
 
         public void bind(UserPreview user) {
-            mLoginView.setText(user.getLogin());
+            mLogin = user.getLogin();
+            mLoginView.setText(mLogin);
         }
     }
 

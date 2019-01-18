@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import java.util.Map;
+
 public class AndroidHelpers {
     public static void changeActivity(AppCompatActivity activity, Class activityClass) {
         Intent intent = new Intent(activity, activityClass);

@@ -7,12 +7,12 @@
     tools:context=".MessagesActivity">
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/messages"
         android:layout_width="match_parent"
         android:layout_weight="1"
         android:layout_height="match_parent" />
 
     <RelativeLayout
-        android:id="@+id/message_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white">
@@ -36,14 +36,13 @@
             android:padding="10dp"
             android:layout_marginRight="35dp" />
 
-        <ImageView
+        <Button
+            android:id="@+id/send"
             android:layout_width="36dp"
             android:layout_height="36dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:adjustViewBounds="false"
-            android:padding="5dp"
-            android:src="@drawable/arrow_right_dark" />
+            android:background="@drawable/send_button" />
     </RelativeLayout>
 
 

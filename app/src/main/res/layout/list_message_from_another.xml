@@ -7,7 +7,6 @@
 
     <TextView
         android:id="@+id/time"
-        android:text="11:45"
         style="@style/MessageTime"
         android:layout_marginLeft="8dp"
         android:textAlignment="textStart" />
@@ -19,7 +18,6 @@
         app:layout_constraintTop_toBottomOf="@id/time">
         <TextView
             android:id="@+id/text"
-            android:text="fkds osdf nuaass dd sd d sdfu"
             android:textAlignment="textStart"
             app:layout_constraintStart_toStartOf="parent"
             style="@style/MessageText"
