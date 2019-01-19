@@ -1,8 +1,5 @@
 package ru.pussy_penetrator.pchat;
 
-import android.media.MediaPlayer;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,6 +28,7 @@ import ru.pussy_penetrator.pchat.request.ResponseCallback;
 import ru.pussy_penetrator.pchat.request.StatusResponse;
 import ru.pussy_penetrator.pchat.utils.AndroidHelpers;
 import ru.pussy_penetrator.pchat.utils.RequestUtils;
+import ru.pussy_penetrator.pchat.utils.SoundManager;
 
 public class MessagesActivity extends AppCompatActivity {
     private final int POLL_FREQUENCY = 600;
@@ -40,6 +38,7 @@ public class MessagesActivity extends AppCompatActivity {
     private JsonObjectRequest mSendMessageRequest;
     private int mLastMessageId;
     private boolean mShouldPoll;
+    private boolean mFirstMessagesReceived;
 
     private RecyclerView mMessagesRecyclerView;
     private MessageAdapter mMessagesAdapter;
@@ -48,6 +47,8 @@ public class MessagesActivity extends AppCompatActivity {
 
     private String mSenderLogin;
     private List<Message> mMessages = new LinkedList<>();
+
+    private SoundManager mSoundManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,12 @@ public class MessagesActivity extends AppCompatActivity {
         });
 
         mLastMessageId = 0;
+        mFirstMessagesReceived = false;
         mRequestQueue = Volley.newRequestQueue(this);
+
+        mSoundManager = new SoundManager(this);
+        mSoundManager.load(R.raw.message_receive);
+        mSoundManager.load(R.raw.message_send);
     }
 
     @Override
@@ -114,6 +120,22 @@ public class MessagesActivity extends AppCompatActivity {
                 mMessagesAdapter.notifyDataSetChanged();
 
                 mLastMessageId = newMessages.get(newMessages.size() - 1).getId();
+
+                playSoundIfNeeded(newMessages);
+                mFirstMessagesReceived = true;
+            }
+
+            private void playSoundIfNeeded(List<Message> messages) {
+                if (!mFirstMessagesReceived) {
+                    return;
+                }
+
+                for(Message message : messages) {
+                    if (message.getSender().equals(mSenderLogin)) {
+                        mSoundManager.play(R.raw.message_receive);
+                        return;
+                    }
+                }
             }
 
             @Override
@@ -149,6 +171,8 @@ public class MessagesActivity extends AppCompatActivity {
 
         MessageRequest message = new MessageRequest(mMessageEdit.getText().toString(), mSenderLogin);
         mMessageEdit.setText("");
+
+        mSoundManager.play(R.raw.message_send);
 
         mSendMessageRequest = RequestUtils.sendMessage(this, message, new ResponseCallback<StatusResponse>() {
             @Override
