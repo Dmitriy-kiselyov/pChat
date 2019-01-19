@@ -1,5 +1,9 @@
 package ru.pussy_penetrator.pchat;
 
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,8 +23,6 @@ import com.android.volley.toolbox.Volley;
 import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import ru.pussy_penetrator.pchat.request.Message;
 import ru.pussy_penetrator.pchat.request.MessageRequest;
@@ -31,11 +33,13 @@ import ru.pussy_penetrator.pchat.utils.AndroidHelpers;
 import ru.pussy_penetrator.pchat.utils.RequestUtils;
 
 public class MessagesActivity extends AppCompatActivity {
+    private final int POLL_FREQUENCY = 600;
+
     private RequestQueue mRequestQueue;
     private JsonObjectRequest mPollMessagesRequest;
     private JsonObjectRequest mSendMessageRequest;
-    private Timer mPollRequestSheduler;
     private int mLastMessageId;
+    private boolean mShouldPoll;
 
     private RecyclerView mMessagesRecyclerView;
     private MessageAdapter mMessagesAdapter;
@@ -68,29 +72,21 @@ public class MessagesActivity extends AppCompatActivity {
             }
         });
 
-        mPollRequestSheduler = new Timer();
         mLastMessageId = 0;
-
         mRequestQueue = Volley.newRequestQueue(this);
-        makePollRequest();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
 
-        mPollRequestSheduler.scheduleAtFixedRate(new TimerTask() {
-              @Override
-              public void run() {
-                  makePollRequest();
-              }
-          },
-        0, 400);
+        mShouldPoll = true;
+        makePollRequest();
     }
 
     @Override
     protected void onStop() {
-        mPollRequestSheduler.cancel();
+        mShouldPoll = false;
 
         super.onStop();
     }
@@ -102,7 +98,7 @@ public class MessagesActivity extends AppCompatActivity {
     }
 
     private void makePollRequest() {
-        if (mPollMessagesRequest != null) {
+        if (mPollMessagesRequest != null || !mShouldPoll) {
             return;
         }
 
@@ -133,6 +129,13 @@ public class MessagesActivity extends AppCompatActivity {
             @Override
             public void onFinal() {
                 mPollMessagesRequest = null;
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        makePollRequest();
+                    }
+                }, POLL_FREQUENCY);
             }
         });
 

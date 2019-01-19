@@ -46,7 +46,7 @@ public class RequestBuilder<Resp extends BaseResponse> {
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject json) {
-                        System.out.println("Received response: " + json);
+                        //System.out.println("Received response: " + json);
 
                         Resp response = (Resp) responseExample.fromJSON(json);
 
