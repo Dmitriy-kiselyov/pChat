@@ -109,7 +109,7 @@ public class MessagesActivity extends AppCompatActivity {
 
         if (mPollMessagesCallback == null) {
             mPollMessagesCallback = new ResponseCallback<MessagesResponse>() {
-                private final int POLL_FREQUENCY = 600;
+                private final int POLL_FREQUENCY = 300;
                 private final int POLL_FREQUENCY_ERROR = 3000;
 
                 private boolean mFirstMessagesReceived = false;
