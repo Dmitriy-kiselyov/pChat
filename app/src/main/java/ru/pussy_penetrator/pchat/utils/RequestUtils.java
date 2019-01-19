@@ -3,10 +3,14 @@ package ru.pussy_penetrator.pchat.utils;
 import android.content.Context;
 
 import com.android.volley.Request;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+
+import ru.pussy_penetrator.pchat.R;
 import ru.pussy_penetrator.pchat.request.AuthResponse;
 import ru.pussy_penetrator.pchat.request.AuthUserRequest;
 import ru.pussy_penetrator.pchat.request.MessageRequest;
@@ -69,5 +73,28 @@ public class RequestUtils {
                 new StatusResponse(),
                 callback
         );
+    }
+
+    public static void alertError(Context context, VolleyError error) {
+        String alertMessage;
+        if (error.networkResponse == null) {
+            alertMessage = context.getString(R.string.error_network);
+        } else {
+            int code = error.networkResponse.statusCode;
+
+            String message;
+            try {
+                message = new String(error.networkResponse.data, "UTF-8");
+                if (message.length() > 30) {
+                    message = context.getString(R.string.error_server);
+                }
+            } catch (UnsupportedEncodingException e) {
+                message = context.getString(R.string.error_server);
+            }
+
+            alertMessage = code + ": " + message;
+        }
+
+        AndroidHelpers.alert(context, alertMessage);
     }
 }

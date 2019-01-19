@@ -99,22 +99,7 @@ public class UserListActivity extends AppCompatActivity {
 
             @Override
             public void onError(VolleyError error) {
-                String alertMessage;
-                if (error.networkResponse == null) {
-                    alertMessage = getString(R.string.error_server);
-                } else {
-                    int code = error.networkResponse.statusCode;
-                    String message;
-                    try {
-                        message = new String(error.networkResponse.data, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        message = getString(R.string.error_server);
-                    }
-
-                    alertMessage = code + ": " + message;
-                }
-
-                AndroidHelpers.alert(getApplicationContext(), alertMessage);
+                RequestUtils.alertError(getApplicationContext(), error);
             }
 
             @Override

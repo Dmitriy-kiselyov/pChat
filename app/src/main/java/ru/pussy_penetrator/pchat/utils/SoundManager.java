@@ -11,7 +11,7 @@ import java.util.Map;
 import static android.media.SoundPool.*;
 
 public class SoundManager {
-    private static int MAX_STREAMS = 5;
+    private static int MAX_STREAMS = 1;
 
     private Context mContext;
     private SoundPool mSoundPool;

@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,14 +32,12 @@ import ru.pussy_penetrator.pchat.utils.RequestUtils;
 import ru.pussy_penetrator.pchat.utils.SoundManager;
 
 public class MessagesActivity extends AppCompatActivity {
-    private final int POLL_FREQUENCY = 600;
-
     private RequestQueue mRequestQueue;
     private JsonObjectRequest mPollMessagesRequest;
+    private ResponseCallback<MessagesResponse> mPollMessagesCallback;
     private JsonObjectRequest mSendMessageRequest;
     private int mLastMessageId;
     private boolean mShouldPoll;
-    private boolean mFirstMessagesReceived;
 
     private RecyclerView mMessagesRecyclerView;
     private MessageAdapter mMessagesAdapter;
@@ -74,7 +73,6 @@ public class MessagesActivity extends AppCompatActivity {
         });
 
         mLastMessageId = 0;
-        mFirstMessagesReceived = false;
         mRequestQueue = Volley.newRequestQueue(this);
 
         mSoundManager = new SoundManager(this);
@@ -108,61 +106,81 @@ public class MessagesActivity extends AppCompatActivity {
             return;
         }
 
-        mPollMessagesRequest = RequestUtils.requestMessages(this, mSenderLogin, mLastMessageId + 1, new ResponseCallback<MessagesResponse>() {
-            @Override
-            public void onSuccess(MessagesResponse response) {
-                List<Message> newMessages = response.getMessages();
-                if (newMessages.isEmpty()) {
-                    return;
-                }
+        if (mPollMessagesCallback == null) {
+            mPollMessagesCallback = new ResponseCallback<MessagesResponse>() {
+                private final int POLL_FREQUENCY = 600;
+                private final int POLL_FREQUENCY_ERROR = 3000;
 
-                mMessages.addAll(newMessages);
-                mMessagesAdapter.notifyDataSetChanged();
+                private boolean mFirstMessagesReceived = false;
+                private boolean mRequestEndedWithError = false;
 
-                mLastMessageId = newMessages.get(newMessages.size() - 1).getId();
-
-                playSoundIfNeeded(newMessages);
-                mFirstMessagesReceived = true;
-
-                mMessagesRecyclerView.scrollToPosition(mMessages.size() - 1);
-            }
-
-            private void playSoundIfNeeded(List<Message> messages) {
-                if (!mFirstMessagesReceived) {
-                    return;
-                }
-
-                for(Message message : messages) {
-                    if (message.getSender().equals(mSenderLogin)) {
-                        mSoundManager.play(R.raw.message_receive);
+                @Override
+                public void onSuccess(MessagesResponse response) {
+                    List<Message> newMessages = response.getMessages();
+                    if (newMessages.isEmpty()) {
                         return;
                     }
+
+                    mMessages.addAll(newMessages);
+                    mMessagesAdapter.notifyDataSetChanged();
+
+                    mLastMessageId = newMessages.get(newMessages.size() - 1).getId();
+
+                    playSoundIfNeeded(newMessages);
+                    mFirstMessagesReceived = true;
+
+                    mRequestEndedWithError = false;
+
+                    mMessagesRecyclerView.scrollToPosition(mMessages.size() - 1);
                 }
-            }
 
-            @Override
-            public void onFail(MessagesResponse response) {
-                AndroidHelpers.alert(getApplicationContext(), "Ошибка загрузки сообщений");
-            }
-
-            @Override
-            public void onError(VolleyError error) {
-                onErrorRequest(error);
-            }
-
-            @Override
-            public void onFinal() {
-                mPollMessagesRequest = null;
-
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        makePollRequest();
+                private void playSoundIfNeeded(List<Message> messages) {
+                    if (!mFirstMessagesReceived) {
+                        return;
                     }
-                }, POLL_FREQUENCY);
-            }
-        });
 
+                    for(Message message : messages) {
+                        if (message.getSender().equals(mSenderLogin)) {
+                            mSoundManager.play(R.raw.message_receive);
+                            return;
+                        }
+                    }
+                }
+
+                @Override
+                public void onFail(MessagesResponse response) {
+                    if (!mRequestEndedWithError) {
+                        AndroidHelpers.alert(getApplicationContext(), "Ошибка загрузки сообщений");
+                    }
+
+                    mRequestEndedWithError = true;
+                }
+
+                @Override
+                public void onError(VolleyError error) {
+                    if (!mRequestEndedWithError) {
+                        RequestUtils.alertError(getApplicationContext(), error);
+                    }
+
+                    mRequestEndedWithError = true;
+                }
+
+                @Override
+                public void onFinal() {
+                    mPollMessagesRequest = null;
+
+                    int delay = mRequestEndedWithError ? POLL_FREQUENCY : POLL_FREQUENCY_ERROR;
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            makePollRequest();
+                        }
+                    }, delay);
+                }
+            };
+        }
+
+        mPollMessagesRequest = RequestUtils.requestMessages(this, mSenderLogin, mLastMessageId + 1, mPollMessagesCallback);
         mRequestQueue.add(mPollMessagesRequest);
     }
 
@@ -171,25 +189,32 @@ public class MessagesActivity extends AppCompatActivity {
             return;
         }
 
-        MessageRequest message = new MessageRequest(mMessageEdit.getText().toString(), mSenderLogin);
+        final String messageText = mMessageEdit.getText().toString();
+        MessageRequest message = new MessageRequest(messageText, mSenderLogin);
         mMessageEdit.setText("");
-
-        mSoundManager.play(R.raw.message_send);
 
         mSendMessageRequest = RequestUtils.sendMessage(this, message, new ResponseCallback<StatusResponse>() {
             @Override
             public void onSuccess(StatusResponse response) {
-                AndroidHelpers.alert(getApplicationContext(), "Success"); // TODO: подумать
+                mSoundManager.play(R.raw.message_send);
             }
 
             @Override
             public void onFail(StatusResponse response) {
-                AndroidHelpers.alert(getApplicationContext(), "Fail"); // TODO: подумать
+                AndroidHelpers.alert(getApplicationContext(), "Не удалось отправить сообщение"); // TODO: подумать
+                tryReturnMessage();
             }
 
             @Override
             public void onError(VolleyError error) {
-                onErrorRequest(error);
+                RequestUtils.alertError(getApplicationContext(), error); // TODO: подумать
+                tryReturnMessage();
+            }
+
+            private void tryReturnMessage() {
+                if (mMessageEdit.getText().toString().isEmpty()) {
+                    mMessageEdit.setText(messageText);
+                }
             }
 
             @Override
@@ -199,25 +224,6 @@ public class MessagesActivity extends AppCompatActivity {
         });
 
         mRequestQueue.add(mSendMessageRequest);
-    }
-
-    private void onErrorRequest(VolleyError error) { // TODO: общая часть
-        String alertMessage;
-        if (error.networkResponse == null) {
-            alertMessage = getString(R.string.error_server);
-        } else {
-            int code = error.networkResponse.statusCode;
-            String message;
-            try {
-                message = new String(error.networkResponse.data, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                message = getString(R.string.error_server);
-            }
-
-            alertMessage = code + ": " + message;
-        }
-
-        AndroidHelpers.alert(getApplicationContext(), alertMessage);
     }
 
     private class MessageHolder extends RecyclerView.ViewHolder {
