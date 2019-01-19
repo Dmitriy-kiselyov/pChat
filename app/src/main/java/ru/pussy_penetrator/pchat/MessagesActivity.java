@@ -123,6 +123,8 @@ public class MessagesActivity extends AppCompatActivity {
 
                 playSoundIfNeeded(newMessages);
                 mFirstMessagesReceived = true;
+
+                mMessagesRecyclerView.scrollToPosition(mMessages.size() - 1);
             }
 
             private void playSoundIfNeeded(List<Message> messages) {
