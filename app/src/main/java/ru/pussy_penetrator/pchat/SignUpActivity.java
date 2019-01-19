@@ -142,6 +142,7 @@ public class SignUpActivity extends AppCompatActivity {
         AuthUserRequest user = new AuthUserRequest(login, password);
 
         mAuthRequest = RequestUtils.requestSignUp(
+                this,
                 user,
                 new ResponseCallback<AuthResponse>() {
                     @Override

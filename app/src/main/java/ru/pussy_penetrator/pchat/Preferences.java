@@ -7,7 +7,11 @@ import android.support.annotation.Nullable;
 
 public class Preferences {
     private static final String PREFERENCES = "pussy_settings";
+
+    private static final String HOST_DEFAULT_VALUE = "192.168.0.104:8080";
+
     private static final String TOKEN = "token";
+    private static final String HOST = "host";
 
     private static Preferences instance;
 
@@ -35,6 +39,14 @@ public class Preferences {
 
     public void clearToken() {
         clear(TOKEN);
+    }
+
+    public void saveHost(String host) {
+        save(HOST, host);
+    }
+
+    public String getHost() {
+        return mPrefs.getString(HOST, HOST_DEFAULT_VALUE);
     }
 
     private void clear(String key) {

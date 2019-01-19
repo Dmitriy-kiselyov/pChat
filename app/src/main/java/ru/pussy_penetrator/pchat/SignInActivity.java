@@ -134,6 +134,7 @@ public class SignInActivity extends AppCompatActivity {
         AuthUserRequest user = new AuthUserRequest(login, password);
 
         mAuthRequest = RequestUtils.requestSignIn(
+                this,
                 user,
                 new ResponseCallback<AuthResponse>() {
                     @Override

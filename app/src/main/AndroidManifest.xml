@@ -33,6 +33,7 @@
         <activity
             android:name=".MessagesActivity"
             android:theme="@style/PChatTheme.NoAnimation" />
+        <activity android:name=".SettingsActivity" />
     </application>
 
 </manifest>

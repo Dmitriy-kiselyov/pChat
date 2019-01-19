@@ -1,6 +1,7 @@
 package ru.pussy_penetrator.pchat;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -51,6 +52,12 @@ public class UserListActivity extends AppCompatActivity {
         mProgress = findViewById(R.id.progress);
 
         mRequestQueue = Volley.newRequestQueue(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
         makeRequest();
     }
 
@@ -64,10 +71,12 @@ public class UserListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        // Операции для выбранного пункта меню
         switch (id) {
             case R.id.action_logout:
                 logout();
+                return true;
+            case R.id.action_settings:
+                AndroidHelpers.changeActivity(this, SettingsActivity.class);
                 return true;
         }
 
@@ -84,6 +93,7 @@ public class UserListActivity extends AppCompatActivity {
             return;
         }
 
+        AndroidHelpers.toggleViews(mUserRecyclerView, mProgress);
         mUserListRequest = RequestUtils.requestUserList(getApplicationContext(), new ResponseCallback<UserListPreviewResponse>() {
             @Override
             public void onSuccess(UserListPreviewResponse response) {

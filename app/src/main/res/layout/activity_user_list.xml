@@ -12,6 +12,7 @@
         android:layout_height="match_parent" />
 
     <ProgressBar
+        android:visibility="gone"
         android:id="@+id/progress"
         style="@style/PChatProgress" />
 </RelativeLayout>

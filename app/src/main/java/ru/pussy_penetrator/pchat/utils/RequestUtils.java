@@ -6,10 +6,9 @@ import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.json.JSONObject;
-
 import java.io.UnsupportedEncodingException;
 
+import ru.pussy_penetrator.pchat.Preferences;
 import ru.pussy_penetrator.pchat.R;
 import ru.pussy_penetrator.pchat.request.AuthResponse;
 import ru.pussy_penetrator.pchat.request.AuthUserRequest;
@@ -20,25 +19,20 @@ import ru.pussy_penetrator.pchat.request.StatusResponse;
 import ru.pussy_penetrator.pchat.request.UserListPreviewResponse;
 
 public class RequestUtils {
-    private static String BASE_URL = "http://192.168.0.104:8080/rest/";
-    private static String AUTH_URL = BASE_URL + "auth";
-    private static String USERS_URL = BASE_URL + "users";
-    private static String MESSAGES_URL = BASE_URL + "messages";
-
-    public static JsonObjectRequest requestSignIn(AuthUserRequest user, ResponseCallback<AuthResponse> callback) {
+    public static JsonObjectRequest requestSignIn(Context context, AuthUserRequest user, ResponseCallback<AuthResponse> callback) {
         return new RequestBuilder<AuthResponse>().build(
                 Request.Method.POST,
-                AUTH_URL,
+                getAuthUrl(context),
                 user,
                 new AuthResponse(),
                 callback
         );
     }
 
-    public static JsonObjectRequest requestSignUp(AuthUserRequest user, ResponseCallback<AuthResponse> callback) {
+    public static JsonObjectRequest requestSignUp(Context context, AuthUserRequest user, ResponseCallback<AuthResponse> callback) {
         return new RequestBuilder<AuthResponse>().build(
                 Request.Method.PUT,
-                AUTH_URL,
+                getAuthUrl(context),
                 user,
                 new AuthResponse(),
                 callback
@@ -48,7 +42,7 @@ public class RequestUtils {
     public static JsonObjectRequest requestUserList(Context context, ResponseCallback<UserListPreviewResponse> callback) {
         return new RequestBuilder<UserListPreviewResponse>(context).build(
                 Request.Method.GET,
-                USERS_URL,
+                getUsersUrl(context),
                 null,
                 new UserListPreviewResponse(),
                 callback
@@ -58,7 +52,7 @@ public class RequestUtils {
     public static JsonObjectRequest requestMessages(Context context, String login, int untilId, ResponseCallback<MessagesResponse> callback) {
         return new RequestBuilder<MessagesResponse>(context).build(
                 Request.Method.GET,
-                MESSAGES_URL + "?for=" + login + "&until=" + untilId,
+                getMessageUrl(context, login, untilId),
                 null,
                 new MessagesResponse(),
                 callback
@@ -68,7 +62,7 @@ public class RequestUtils {
     public static JsonObjectRequest sendMessage(Context context, MessageRequest message, ResponseCallback<StatusResponse> callback) {
         return new RequestBuilder<StatusResponse>(context).build(
                 Request.Method.POST,
-                MESSAGES_URL,
+                getMessageUrl(context),
                 message,
                 new StatusResponse(),
                 callback
@@ -96,5 +90,25 @@ public class RequestUtils {
         }
 
         AndroidHelpers.alert(context, alertMessage);
+    }
+
+    private static String getBaseUrl(Context context) {
+        return "http://" + Preferences.get(context).getHost() + "/rest/";
+    }
+
+    private static String getAuthUrl(Context context) {
+        return getBaseUrl(context) + "auth";
+    }
+
+    private static String getUsersUrl(Context context) {
+        return getBaseUrl(context) + "users";
+    }
+
+    private static String getMessageUrl(Context context) {
+        return getBaseUrl(context) + "messages";
+    }
+
+    private static String getMessageUrl(Context context, String login, int untilId) {
+        return getMessageUrl(context) + "?for=" + login + "&until=" + untilId;
     }
 }
