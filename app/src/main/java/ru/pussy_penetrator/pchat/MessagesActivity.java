@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
-import java.io.UnsupportedEncodingException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -40,6 +38,7 @@ public class MessagesActivity extends AppCompatActivity {
     private boolean mShouldPoll;
 
     private RecyclerView mMessagesRecyclerView;
+    private TextView mEmptyMessagesTextView;
     private MessageAdapter mMessagesAdapter;
     private EditText mMessageEdit;
     private Button mSendButton;
@@ -63,6 +62,8 @@ public class MessagesActivity extends AppCompatActivity {
         mMessagesRecyclerView.setAdapter(mMessagesAdapter);
 
         mMessageEdit = findViewById(R.id.message);
+
+        mEmptyMessagesTextView = findViewById(R.id.empty_messages);
 
         mSendButton = findViewById(R.id.send);
         mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -117,12 +118,11 @@ public class MessagesActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(MessagesResponse response) {
                     List<Message> newMessages = response.getMessages();
+                    updateMessages(newMessages);
+
                     if (newMessages.isEmpty()) {
                         return;
                     }
-
-                    mMessages.addAll(newMessages);
-                    mMessagesAdapter.notifyDataSetChanged();
 
                     mLastMessageId = newMessages.get(newMessages.size() - 1).getId();
 
@@ -130,8 +130,6 @@ public class MessagesActivity extends AppCompatActivity {
                     mFirstMessagesReceived = true;
 
                     mRequestEndedWithError = false;
-
-                    mMessagesRecyclerView.scrollToPosition(mMessages.size() - 1);
                 }
 
                 private void playSoundIfNeeded(List<Message> messages) {
@@ -182,6 +180,25 @@ public class MessagesActivity extends AppCompatActivity {
 
         mPollMessagesRequest = RequestUtils.requestMessages(this, mSenderLogin, mLastMessageId + 1, mPollMessagesCallback);
         mRequestQueue.add(mPollMessagesRequest);
+    }
+
+    private void updateMessages(List<Message> newMessages) {
+        mMessages.addAll(newMessages);
+
+        if (mMessages.isEmpty()) {
+            mEmptyMessagesTextView.setVisibility(View.VISIBLE);
+            return;
+        } else {
+            mEmptyMessagesTextView.setVisibility(View.GONE);
+            mMessagesRecyclerView.setVisibility(View.VISIBLE);
+        }
+
+        if (newMessages.isEmpty()) {
+            return;
+        }
+
+        mMessagesAdapter.notifyDataSetChanged();
+        mMessagesRecyclerView.scrollToPosition(mMessages.size() - 1);
     }
 
     private void makeSendRequest() {

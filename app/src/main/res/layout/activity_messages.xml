@@ -6,11 +6,25 @@
     android:orientation="vertical"
     tools:context=".MessagesActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/messages"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/messages"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:id="@+id/empty_messages"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:text="@string/prompt_empty_messages"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"

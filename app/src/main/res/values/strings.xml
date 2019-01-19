@@ -32,4 +32,5 @@
 
     <!-- Чат -->
     <string name="prompt_message">Сообщение</string>
+    <string name="prompt_empty_messages">Сообщений нет. Начти общение, будь первым!</string>
 </resources>
