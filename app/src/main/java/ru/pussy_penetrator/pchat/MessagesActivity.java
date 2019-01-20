@@ -18,6 +18,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import ru.pussy_penetrator.pchat.request.MessagesResponse;
 import ru.pussy_penetrator.pchat.request.ResponseCallback;
 import ru.pussy_penetrator.pchat.request.StatusResponse;
 import ru.pussy_penetrator.pchat.utils.AndroidHelpers;
+import ru.pussy_penetrator.pchat.utils.DateUtils;
 import ru.pussy_penetrator.pchat.utils.RequestUtils;
 import ru.pussy_penetrator.pchat.utils.SoundManager;
 
@@ -254,9 +256,15 @@ public class MessagesActivity extends AppCompatActivity {
             mTextView = itemView.findViewById(R.id.text);
         }
 
-        public void bind(Message message) {
-            mTimeView.setText(message.getFormattedTime());
+        public void bind(Message message, boolean shouldShowTime) {
             mTextView.setText(message.getText());
+
+            if (shouldShowTime) {
+                mTimeView.setVisibility(View.VISIBLE);
+                mTimeView.setText(message.getFormattedTime());
+            } else {
+                mTimeView.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -303,7 +311,20 @@ public class MessagesActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(MessageHolder holder, int position) {
             Message message = mMessages.get(position);
-            holder.bind(message);
+
+            boolean shouldShowTime = true;
+            if (position > 0) {
+                shouldShowTime = shouldShowTime(mMessages.get(position - 1), message);
+            }
+
+            holder.bind(message, shouldShowTime);
+        }
+
+        private boolean shouldShowTime(Message prevMessage, Message curMessage) {
+            Date prevDate = new Date(prevMessage.getTime());
+            Date curDate = new Date(curMessage.getTime());
+
+            return !DateUtils.sameToMinutes(prevDate, curDate);
         }
 
         @Override

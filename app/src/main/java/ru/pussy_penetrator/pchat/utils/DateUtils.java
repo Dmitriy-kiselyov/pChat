@@ -33,4 +33,18 @@ public class DateUtils {
         }
         return formatted;
     }
+
+    public static boolean sameToMinutes(Date date1, Date date2) {
+        if (
+                date1.getYear() == date2.getYear() &&
+                date1.getMonth() == date2.getMonth() &&
+                date1.getDate() == date2.getDate() &&
+                date1.getHours() == date2.getHours() &&
+                date1.getMinutes() == date2.getMinutes()
+        ) {
+            return true;
+        }
+
+        return false;
+    }
 }

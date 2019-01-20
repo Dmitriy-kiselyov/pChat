@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="8dp">
+    android:paddingLeft="4dp"
+    android:paddingRight="4dp"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp">
 
     <TextView
         android:id="@+id/time"
@@ -14,7 +17,7 @@
     <android.support.constraint.ConstraintLayout
         style="@style/MessageWrapper"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.7"
+        app:layout_constraintWidth_percent="0.8"
         app:layout_constraintTop_toBottomOf="@id/time">
         <TextView
             android:id="@+id/text"
