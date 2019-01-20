@@ -16,6 +16,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        setTitle(R.string.menu_settings);
 
         mHostEdit = findViewById(R.id.host);
         mHostEdit.setText(Preferences.get(this).getHost());

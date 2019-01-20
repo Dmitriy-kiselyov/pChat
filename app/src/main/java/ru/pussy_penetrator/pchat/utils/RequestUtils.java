@@ -93,7 +93,7 @@ public class RequestUtils {
     }
 
     private static String getBaseUrl(Context context) {
-        return "http://" + Preferences.get(context).getHost() + "/rest/";
+        return "http://" + Preferences.get(context).getHost() + ":8080/rest/";
     }
 
     private static String getAuthUrl(Context context) {
