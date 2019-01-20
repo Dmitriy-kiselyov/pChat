@@ -2,7 +2,6 @@ package ru.pussy_penetrator.pchat.utils;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
@@ -11,12 +10,15 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
-import java.util.Map;
-
 public class AndroidHelpers {
     public static void changeActivity(AppCompatActivity activity, Class activityClass) {
         Intent intent = new Intent(activity, activityClass);
         activity.startActivity(intent);
+    }
+
+    public static void changeActivityWithNoReturn(AppCompatActivity activity, Class activityClass) {
+        changeActivity(activity, activityClass);
+        activity.finish();
     }
 
     public static void alert(Context context, String message) {

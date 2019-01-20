@@ -24,12 +24,10 @@
         </activity>
         <activity
             android:name=".SignInActivity"
-            android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/AuthTheme" />
         <activity
             android:name=".SignUpActivity"
-            android:noHistory="true"
             android:screenOrientation="portrait"
             android:theme="@style/AuthTheme" />
         <activity

@@ -85,7 +85,7 @@ public class UserListActivity extends AppCompatActivity {
 
     private void logout() {
         Preferences.get(this).clearToken();
-        AndroidHelpers.changeActivity(this, SignInActivity.class);
+        AndroidHelpers.changeActivityWithNoReturn(this, SignInActivity.class);
     }
 
     private void makeRequest() {

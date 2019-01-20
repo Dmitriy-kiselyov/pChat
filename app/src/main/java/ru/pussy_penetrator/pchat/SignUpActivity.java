@@ -74,7 +74,15 @@ public class SignUpActivity extends AppCompatActivity {
         signInRedirect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AndroidHelpers.changeActivity(_this, SignInActivity.class);
+                AndroidHelpers.changeActivityWithNoReturn(_this, SignInActivity.class);
+            }
+        });
+
+        TextView settingsTextView = findViewById(R.id.settings);
+        settingsTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AndroidHelpers.changeActivity(_this, SettingsActivity.class);
             }
         });
     }
@@ -150,7 +158,7 @@ public class SignUpActivity extends AppCompatActivity {
                         String token = response.getToken();
                         Preferences.get(getApplicationContext()).saveToken(token);
 
-                        AndroidHelpers.changeActivity(_this, UserListActivity.class);
+                        AndroidHelpers.changeActivityWithNoReturn(_this, UserListActivity.class);
                     }
 
                     @Override
