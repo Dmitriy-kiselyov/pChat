@@ -3,6 +3,7 @@ package ru.pussy_penetrator.pchat;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,7 +42,6 @@ public class MessagesActivity extends AppCompatActivity {
     private TextView mEmptyMessagesTextView;
     private MessageAdapter mMessagesAdapter;
     private EditText mMessageEdit;
-    private Button mSendButton;
 
     private String mSenderLogin;
     private List<Message> mMessages = new LinkedList<>();
@@ -65,8 +65,8 @@ public class MessagesActivity extends AppCompatActivity {
 
         mEmptyMessagesTextView = findViewById(R.id.empty_messages);
 
-        mSendButton = findViewById(R.id.send);
-        mSendButton.setOnClickListener(new View.OnClickListener() {
+        AppCompatImageButton sendButton = findViewById(R.id.send);
+        sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeSendRequest();
